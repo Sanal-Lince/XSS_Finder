@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import re
 
 class XSSTester:
 
@@ -12,7 +11,6 @@ class XSSTester:
         Send the payload to the URL and check for XSS vulnerability.
         """
         try:
-            # Send payload to a URL (query params, form data, etc.)
             response = self.session.get(url, params={'q': payload})
             if payload in response.text:
                 print(f"Potential XSS found with payload: {payload}")
@@ -20,6 +18,22 @@ class XSSTester:
                 print(f"No XSS found with payload: {payload}")
         except requests.exceptions.RequestException as e:
             print(f"Error with request: {e}")
+
+    def test_payloads_from_file(self, url, file_path):
+        """
+        Test multiple payloads from a file.
+        """
+        try:
+            with open(file_path, 'r') as file:
+                payloads = file.readlines()
+                for payload in payloads:
+                    payload = payload.strip()  # Remove leading/trailing whitespace
+                    print(f"Testing payload: {payload}")
+                    self.test_payload(url, payload)
+        except FileNotFoundError:
+            print(f"Error: The file '{file_path}' does not exist.")
+        except Exception as e:
+            print(f"Error reading file: {e}")
 
     def test_dom_xss(self, url, payload):
         """
